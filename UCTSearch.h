@@ -47,6 +47,7 @@ private:
     void dump_thinking();
     void dump_analysis();
     void dump_order2(void);
+    bool stop_thinking(int elapsed_centis = 0, int time_for_move = 0) const;
     int get_best_move(passflag_t passflag);
     int get_best_move_nosearch(std::vector<std::pair<float, int>> moves,
                                float score, passflag_t passflag);

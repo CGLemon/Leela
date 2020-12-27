@@ -770,6 +770,12 @@ bool UCTSearch::playout_limit_reached() {
     return m_playouts >= m_maxplayouts;
 }
 
+bool UCTSearch::stop_thinking(int elapsed_centis, int time_for_move) const {
+    return m_playouts >= m_maxplayouts
+           // || m_root.get_visits() >= m_maxvisits
+           || elapsed_centis >= time_for_move;
+}
+
 void UCTWorker::operator()() {
     do {
         KoState currstate = m_rootstate;
@@ -911,9 +917,9 @@ int UCTSearch::think(int color, passflag_t passflag) {
                 dump_analysis();
                 dump_GUI_stats(m_rootstate, m_root);
             }
-            keeprunning = (centiseconds_elapsed < time_for_move
-                           && (!m_hasrunflag || (*m_runflag)));
-            keeprunning &= !playout_limit_reached();
+
+            keeprunning = (!m_hasrunflag || (*m_runflag));
+            keeprunning &= stop_thinking(centiseconds_elapsed, time_for_move);
 
             // check for early exit
             if (keeprunning && ((m_playouts & 127) == 0)) {
@@ -1043,7 +1049,7 @@ void UCTSearch::ponder() {
                 output_analysis(m_rootstate, m_root);
             }
         }
-    } while(!Utils::input_pending() && (!m_hasrunflag || (*m_runflag)));
+    } while(!Utils::input_pending() && (!m_hasrunflag || (*m_runflag)) && !stop_thinking(0, 1));
 
     // stop the search
     m_run = false;
