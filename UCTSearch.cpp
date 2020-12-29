@@ -918,7 +918,7 @@ int UCTSearch::think(int color, passflag_t passflag) {
                 dump_GUI_stats(m_rootstate, m_root);
             }
 
-            keeprunning = (!m_hasrunflag || (*m_runflag)) ;
+            keeprunning = (!m_hasrunflag || (*m_runflag));
             keeprunning &= !stop_thinking(centiseconds_elapsed, time_for_move);
 
             // check for early exit
